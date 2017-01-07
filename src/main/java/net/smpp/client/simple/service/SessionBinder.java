@@ -1,8 +1,10 @@
 package net.smpp.client.simple.service;
 
 import lombok.Getter;
+import net.smpp.client.simple.controller.MainController;
 import net.smpp.client.simple.utils.Constants;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import org.jsmpp.bean.BindType;
 import org.jsmpp.bean.NumberingPlanIndicator;
 import org.jsmpp.bean.TypeOfNumber;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Component;
 @Getter
 @Component
 public class SessionBinder {
+
+    private Logger logger = Logger.getLogger(SessionBinder.class);
 
     private final MessageReceiver messageReceiver;
     private SMPPSession session;

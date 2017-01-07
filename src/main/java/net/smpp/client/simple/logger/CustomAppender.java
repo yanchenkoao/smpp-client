@@ -7,14 +7,12 @@ import org.apache.log4j.spi.LoggingEvent;
 
 public class CustomAppender extends WriterAppender {
 
-    private static final String splitLine = "------------------------------------------------------------------------------------------------------------------------------------------------------";
     private static TextArea logArea;
 
     @Override
     public void append(LoggingEvent loggingEvent) {
 
-
-        String logRow = layout.format(loggingEvent) + System.lineSeparator() + splitLine + System.lineSeparator();
+        String logRow = layout.format(loggingEvent) + System.lineSeparator();
 
         if (loggingEvent.getLevel() == Level.ERROR || loggingEvent.getLevel() == Level.WARN) {
             logArea.setStyle("-fx-text-fill: red");
