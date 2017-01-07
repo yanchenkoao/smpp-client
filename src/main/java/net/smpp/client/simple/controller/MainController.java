@@ -4,7 +4,6 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyEvent;
 import net.smpp.client.simple.logger.CustomAppender;
 import net.smpp.client.simple.service.MessageSender;
@@ -78,10 +77,11 @@ public class MainController {
      */
     @FXML
     public void initialize() {
-        sessionTypeChoiceBox.setItems(FXCollections.observableArrayList(BIND_TX, BIND_RX, BIND_TRX));
+        sessionTypeChoiceBox.setItems(FXCollections.observableArrayList(BIND_TRX, BIND_TX, BIND_RX));
         sessionTypeChoiceBox.getSelectionModel().selectFirst();
         sendTextButton.disableProperty().set(true);
 
+        //set logger appender to text area for logging (on init stage)
         CustomAppender.setLogTextArea(logArea);
     }
 
@@ -126,12 +126,15 @@ public class MainController {
     public void disconnectButtonPressed(ActionEvent actionEvent) {
         SMPPSession session = sessionBinder.getSession();
 
-        if (session != null) {
-            session.unbindAndClose();
-            System.out.println("Disconnected" + System.lineSeparator());
-
-            disconnectButton.disableProperty().set(true);
-            connectButton.disableProperty().set(false);
+        try {
+            if (session != null) {
+                session.unbindAndClose();
+                logger.info("Disconnected" + System.lineSeparator());
+                disconnectButton.disableProperty().set(true);
+                connectButton.disableProperty().set(false);
+            }
+        } catch (Exception e) {
+            logger.error(ExceptionUtils.getStackTrace(e));
         }
     }
 
@@ -143,23 +146,23 @@ public class MainController {
             String text = enterTextArea.getText();
 
             if (alphaName.isEmpty()) {
-                System.out.println("alpha name can`t be empty");
+                logger.error("alpha name can`t be empty");
                 return;
             } else if (phone.isEmpty() || !phone.matches("[0-9]+")) {
-                System.out.println("phone is incorrect");
+                logger.error("phone is incorrect");
                 return;
             } else if (text.isEmpty()) {
-                System.out.println("text can`t be empty");
+                logger.error("text can`t be empty");
                 return;
             }
 
             if (sessionBinder.getSession() != null) {
                 messageSender.sendMessage(text, alphaName, phone, sessionBinder.getSession());
             } else {
-                System.out.println("smpp session not connected");
+                logger.error("smpp session not connected");
             }
         } catch (Exception ex) {
-            System.out.println(ex);
+            logger.error(ExceptionUtils.getStackTrace(ex));
         }
     }
 

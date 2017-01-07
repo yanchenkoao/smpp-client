@@ -1,5 +1,7 @@
 package net.smpp.client.simple.service;
 
+import net.smpp.client.simple.utils.TextUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.jsmpp.bean.*;
 import org.jsmpp.extra.ProcessRequestException;
@@ -16,7 +18,7 @@ import java.util.stream.Collectors;
 @Component
 class MessageReceiver implements MessageReceiverListener {
 
-//    private Logger logger = Logger.getLogger(MessageReceiver.class);
+    private Logger logger = Logger.getLogger(MessageReceiver.class);
 
     @Override
     public void onAcceptDeliverSm(DeliverSm deliverSm) throws ProcessRequestException {
@@ -27,7 +29,6 @@ class MessageReceiver implements MessageReceiverListener {
                 String messageId = Long.toString(id, 16).toUpperCase();
 
                 OptionalParameter[] optionalParameters = deliverSm.getOptionalParameters();
-
                 String parametersCollect = "";
 
                 try {
@@ -41,28 +42,30 @@ class MessageReceiver implements MessageReceiverListener {
                                 }
                             })
                             .collect(Collectors.joining());
-                } catch (NullPointerException e){
-                    System.out.println("no special hex tags");
+                } catch (NullPointerException e) {
+                    logger.info("no Optional parameters in hex tags");
                 }
 
-                System.out.println("Delivery Receipt: messageId=" + messageId + "  text=" + delReceipt + System.lineSeparator() + parametersCollect);
+                logger.info("Delivery Receipt: hex messageId=" + messageId + " long messageId=" + id + System.lineSeparator() +
+                        "text=" + delReceipt + System.lineSeparator() +
+                        parametersCollect + System.lineSeparator());
             } catch (InvalidDeliveryReceiptException e) {
-                System.out.println(e);
+                logger.error(ExceptionUtils.getStackTrace(e));
             }
         } else {
             // regular short message
-            System.out.println("Receiving message : " + new String(deliverSm.getShortMessage()));
+            logger.info("Receiving message : " + new String(deliverSm.getShortMessage()));
         }
     }
 
     @Override
     public void onAcceptAlertNotification(AlertNotification alertNotification) {
-        System.out.println("onAcceptAlertNotification");
+        logger.info("Received AlertNotification (onAcceptAlertNotification method)");
     }
 
     @Override
     public DataSmResult onAcceptDataSm(DataSm dataSm, Session source) throws ProcessRequestException {
-        System.out.println("onAcceptDataSm");
+        logger.info("Received DataSm (onAcceptDataSm method)");
         return null;
     }
 }

@@ -2,16 +2,19 @@ package net.smpp.client.simple.service;
 
 import net.smpp.client.simple.utils.Constants;
 import net.smpp.client.simple.utils.TextUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
 import org.jsmpp.bean.*;
 import org.jsmpp.session.SMPPSession;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.Random;
 
 @Component
 public class MessageSender {
 
-//   private Logger logger = Logger.getLogger(MessageSender.class);
+    private Logger logger = Logger.getLogger(MessageSender.class);
 
     public void sendMessage(String text, String alphaName, String phone, SMPPSession session) {
         try {
@@ -25,12 +28,7 @@ public class MessageSender {
             OptionalParameter sarTotalSegments = OptionalParameters.newSarTotalSegments(totalSegments);
 
             for (int i = 0; i < totalSegments; i++) {
-                byte[] message;
-                if (encoding == 8) {
-                    message = partsMessage[i].getBytes(Constants.UCS2_ENCODING);
-                } else {
-                    message = partsMessage[i].getBytes();
-                }
+                byte[] message = TextUtils.convertStringToByte(partsMessage[i], encoding);
 
                 OptionalParameter sarSegmentSeqnum = OptionalParameters.newSarSegmentSeqnum(i + 1);
                 String messageId = submitMessage(
@@ -42,10 +40,10 @@ public class MessageSender {
                         alphaName,
                         phone,
                         encoding);
-                System.out.println("Message sent, message_id is " + Long.valueOf(messageId, 16));
+                logger.info("Message sent, message_id is " + Long.valueOf(messageId, 16));
             }
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(ExceptionUtils.getStackTrace(e));
         }
     }
 
@@ -80,7 +78,7 @@ public class MessageSender {
                     sarSegmentSeqnum,
                     sarTotalSegments);
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(ExceptionUtils.getStackTrace(e));
         }
         return messageId;
     }

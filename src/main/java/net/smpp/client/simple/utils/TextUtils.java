@@ -1,12 +1,15 @@
 package net.smpp.client.simple.utils;
 
 import org.jsmpp.SMPPConstant;
+import org.jsmpp.bean.DataCoding;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 public final class TextUtils {
 
+    private static final String UCS2_ENCODING = "UTF-16BE";
     public static final long serialVersionUID = 1_000_025L;
 
     private TextUtils() {
@@ -18,7 +21,25 @@ public final class TextUtils {
         } else {
             return SMPPConstant.ALPHA_UCS2; //0x08
         }
+    }
 
+    public static byte[] convertStringToByte(String text, byte dataCoding) throws UnsupportedEncodingException {
+        if (dataCoding == SMPPConstant.ALPHA_DEFAULT) {
+            //latin ALPHA_DEFAULT
+            return text.getBytes();
+        } else {
+            //cyrylic ALPHA_UCS2
+            return text.getBytes(UCS2_ENCODING);
+        }
+    }
+
+    public static String convertByteToString(byte[] array, byte dataCoding) throws UnsupportedEncodingException {
+        //0-latin, 8-cyrillic
+        if (dataCoding == SMPPConstant.ALPHA_DEFAULT) {
+            return new String(array);
+        } else {
+            return new String(array, UCS2_ENCODING);
+        }
     }
 
     public static String[] getPartsOfMessage(String value) {
