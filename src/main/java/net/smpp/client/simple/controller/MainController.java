@@ -3,8 +3,14 @@ package net.smpp.client.simple.controller;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import net.smpp.client.simple.domain.ServiceType;
 import net.smpp.client.simple.logger.CustomAppender;
 import net.smpp.client.simple.service.MessageSender;
 import net.smpp.client.simple.service.SessionBinder;
@@ -14,10 +20,13 @@ import org.apache.log4j.Logger;
 import org.jsmpp.bean.BindType;
 import org.jsmpp.session.SMPPSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
+import static net.smpp.client.simple.domain.ServiceType.*;
 import static org.jsmpp.bean.BindType.*;
 
 @Component
@@ -28,8 +37,11 @@ public class MainController {
     private final MessageSender messageSender;
     private final SessionBinder sessionBinder;
 
+    @Autowired
+    private ApplicationContext springContext;
+
     @FXML
-    private ChoiceBox sessionTypeChoiceBox;
+    private ChoiceBox<BindType> sessionTypeChoiceBox;
     @FXML
     private TextField serverIpField;
     @FXML
@@ -54,6 +66,22 @@ public class MainController {
     private Button sendTextButton;
     @FXML
     private Label countPartsLabel;
+    @FXML
+    private ChoiceBox<ServiceType> serviceTypeChoiceBox;
+    @FXML
+    private TextField registeredDeliveryField;
+    @FXML
+    private TextField validityPeriodField;
+    @FXML
+    private TextField esmClassField;
+    @FXML
+    private TextField sourceAddrTonField;
+    @FXML
+    private TextField sourceAddrNpiField;
+    @FXML
+    private TextField destAddrTonField;
+    @FXML
+    private TextField destAddrNpiField;
 
     @Autowired
     public MainController(MessageSender messageSender, SessionBinder sessionBinder) {
@@ -81,6 +109,17 @@ public class MainController {
         sessionTypeChoiceBox.getSelectionModel().selectFirst();
         sendTextButton.disableProperty().set(true);
 
+        serviceTypeChoiceBox.setItems(FXCollections.observableArrayList(
+                default_type,
+                cellular_messaging_CMT,
+                cellular_paging_CPT,
+                voice_mail_notification_VMN,
+                voice_mail_alerting_VMA,
+                wireless_application_protocol_WAP,
+                unstructured_supplementary_services_data_USSD
+        ));
+        serviceTypeChoiceBox.getSelectionModel().selectFirst();
+
         //set logger appender to text area for logging (on init stage)
         CustomAppender.setLogTextArea(logArea);
     }
@@ -102,20 +141,22 @@ public class MainController {
     public void connectButtonPressed(ActionEvent actionEvent) {
         try {
             //check session type;
-            BindType bindType = (BindType) sessionTypeChoiceBox.getSelectionModel().getSelectedItem();
+            BindType bindType = sessionTypeChoiceBox.getSelectionModel().getSelectedItem();
 
             String login = loginField.getText();
             String pass = passwordField.getText();
             String ip = serverIpField.getText();
-            String port = serverPortField.getText();
+            Integer port = Integer.valueOf(serverPortField.getText());
 
-            sessionBinder.bindSession(bindType, login, pass, ip, Integer.valueOf(port));
-
+            sessionBinder.bindSession(bindType, login, pass, ip, port);
             logger.info("Connected" + System.lineSeparator());
 
             connectButton.disableProperty().set(true);
             disconnectButton.disableProperty().set(false);
             sendTextButton.disableProperty().set(false);
+
+            setServerPropertiesDisabled(true);
+
         } catch (Exception e) {
             connectButton.disableProperty().set(false);
             logger.error(ExceptionUtils.getStackTrace(e));
@@ -132,6 +173,8 @@ public class MainController {
                 logger.info("Disconnected" + System.lineSeparator());
                 disconnectButton.disableProperty().set(true);
                 connectButton.disableProperty().set(false);
+
+                setServerPropertiesDisabled(false);
             }
         } catch (Exception e) {
             logger.error(ExceptionUtils.getStackTrace(e));
@@ -156,8 +199,26 @@ public class MainController {
                 return;
             }
 
+            ServiceType serviceType = serviceTypeChoiceBox.getSelectionModel().getSelectedItem();
+            Integer validityPeriod = Integer.valueOf(validityPeriodField.getText());
+            Integer esmClass = Integer.valueOf(esmClassField.getText());
+            Byte sourceAddrTon = Byte.valueOf(sourceAddrTonField.getText());
+            Byte sourceAddrNpi = Byte.valueOf(sourceAddrNpiField.getText());
+            Byte destAddrTon = Byte.valueOf(destAddrTonField.getText());
+            Byte destAddrNpi = Byte.valueOf(destAddrNpiField.getText());
+
             if (sessionBinder.getSession() != null) {
-                messageSender.sendMessage(text, alphaName, phone, sessionBinder.getSession());
+                messageSender.sendMessage(text,
+                        alphaName,
+                        phone,
+                        sessionBinder.getSession(),
+                        serviceType,
+                        validityPeriod,
+                        esmClass,
+                        sourceAddrTon,
+                        sourceAddrNpi,
+                        destAddrTon,
+                        destAddrNpi);
             } else {
                 logger.error("smpp session not connected");
             }
@@ -176,8 +237,16 @@ public class MainController {
         logArea.clear();
     }
 
-
+    @FXML
     public void textAreaChangedTextAction(KeyEvent keyEvent) {
         countPartsLabel.setText(String.valueOf(TextUtils.getPartsOfMessage(enterTextArea.getText()).length));
+    }
+
+    private void setServerPropertiesDisabled(boolean isDisabled) {
+        serverIpField.disableProperty().set(isDisabled);
+        serverPortField.disableProperty().set(isDisabled);
+        loginField.disableProperty().set(isDisabled);
+        passwordField.disableProperty().set(isDisabled);
+        sessionTypeChoiceBox.disableProperty().set(isDisabled);
     }
 }

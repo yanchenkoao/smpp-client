@@ -13,13 +13,6 @@ public class CustomAppender extends WriterAppender {
     public void append(LoggingEvent loggingEvent) {
 
         String logRow = layout.format(loggingEvent) + System.lineSeparator();
-
-        if (loggingEvent.getLevel() == Level.ERROR || loggingEvent.getLevel() == Level.WARN) {
-            logArea.setStyle("-fx-text-fill: red");
-        } else {
-            logArea.setStyle("-fx-text-fill: black;");
-        }
-
         logArea.appendText(logRow);
         logArea.positionCaret(logArea.getLength());
     }

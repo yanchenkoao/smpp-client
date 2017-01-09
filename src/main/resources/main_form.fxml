@@ -11,37 +11,53 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="689.0" prefWidth="818.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.smpp.client.simple.controller.MainController">
    <children>
-      <Label layoutX="10.0" layoutY="15.0" text="server:" />
-      <TextField fx:id="serverIpField" layoutX="56.0" layoutY="11.0" prefHeight="26.0" prefWidth="136.0" text="127.0.0.1" />
-      <Label layoutX="195.0" layoutY="17.0" text="port:" />
-      <TextField fx:id="serverPortField" layoutX="229.0" layoutY="11.0" prefHeight="26.0" prefWidth="70.0" text="8056" />
-      <Label layoutX="304.0" layoutY="17.0" text="login:" />
-      <TextField fx:id="loginField" layoutX="345.0" layoutY="11.0" prefHeight="26.0" prefWidth="101.0" />
-      <Label layoutX="450.0" layoutY="16.0" text="pass:" />
-      <TextField fx:id="passwordField" layoutX="491.0" layoutY="12.0" prefHeight="26.0" prefWidth="101.0" />
-      <Button fx:id="connectButton" layoutX="598.0" layoutY="11.0" mnemonicParsing="false" onAction="#connectButtonPressed" prefHeight="26.0" prefWidth="101.0" text="Connect" />
-      <Button fx:id="disconnectButton" layoutX="703.0" layoutY="11.0" mnemonicParsing="false" onAction="#disconnectButtonPressed" prefHeight="26.0" prefWidth="101.0" text="Disconnect" />
-      <ChoiceBox fx:id="sessionTypeChoiceBox" layoutX="82.0" layoutY="48.0" prefHeight="26.0" prefWidth="126.0" />
-      <Label layoutX="9.0" layoutY="52.0" prefHeight="16.0" prefWidth="93.0" text="session type:" />
-      <Label layoutX="220.0" layoutY="52.0" text="alpha name:" />
-      <TextField fx:id="alphaNameField" layoutX="293.0" layoutY="48.0" prefHeight="26.0" prefWidth="117.0" />
-      <Label layoutX="414.0" layoutY="53.0" text="phone number:" />
-      <TextField fx:id="phoneNumberField" layoutX="504.0" layoutY="49.0" prefHeight="26.0" prefWidth="126.0" />
-      <Separator layoutX="9.0" layoutY="79.0" prefHeight="3.0" prefWidth="802.0" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="7.0" />
-      <Label layoutX="11.0" layoutY="89.0" text="Message to send:" />
-      <TextArea fx:id="enterTextArea" layoutX="129.0" layoutY="89.0" onKeyReleased="#textAreaChangedTextAction" prefHeight="61.0" prefWidth="570.0" />
-      <Button fx:id="sendTextButton" layoutX="703.0" layoutY="89.0" mnemonicParsing="false" onAction="#sendMessageButtonPressed" prefHeight="26.0" prefWidth="101.0" text="Send" />
-      <Button fx:id="clearTextButton" layoutX="704.0" layoutY="123.0" mnemonicParsing="false" onAction="#clearMessageAreaButtonPressed" prefHeight="26.0" prefWidth="101.0" text="Clear" />
-      <Separator layoutY="162.0" prefHeight="3.0" prefWidth="809.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="10.0" />
-      <Label layoutX="352.0" layoutY="168.0" text="Events log" />
-      <TextArea fx:id="logArea" editable="false" layoutX="10.0" layoutY="186.0" prefHeight="466.0" prefWidth="802.0">
+      <Label layoutX="44.0" layoutY="16.0" text="server:" />
+      <TextField fx:id="serverIpField" layoutX="83.0" layoutY="11.0" prefHeight="26.0" prefWidth="126.0" text="127.0.0.1" />
+      <Label layoutX="50.0" layoutY="48.0" text="port:" />
+      <TextField fx:id="serverPortField" layoutX="83.0" layoutY="42.0" prefHeight="26.0" prefWidth="126.0" text="8056" />
+      <Label layoutX="221.0" layoutY="17.0" text="login:" />
+      <TextField fx:id="loginField" layoutX="257.0" layoutY="12.0" prefHeight="26.0" prefWidth="126.0" />
+      <Label layoutX="223.0" layoutY="47.0" text="pass:" />
+      <TextField fx:id="passwordField" layoutX="257.0" layoutY="42.0" prefHeight="26.0" prefWidth="126.0" />
+      <Button fx:id="connectButton" layoutX="621.0" layoutY="11.0" mnemonicParsing="false" onAction="#connectButtonPressed" prefHeight="26.0" prefWidth="101.0" text="Connect" />
+      <Button fx:id="disconnectButton" layoutX="621.0" layoutY="42.0" mnemonicParsing="false" onAction="#disconnectButtonPressed" prefHeight="26.0" prefWidth="101.0" text="Disconnect" />
+      <ChoiceBox fx:id="sessionTypeChoiceBox" layoutX="83.0" layoutY="71.0" prefHeight="26.0" prefWidth="126.0" />
+      <Label layoutX="9.0" layoutY="76.0" prefHeight="17.0" prefWidth="72.0" text="session type:" />
+      <Label layoutX="396.0" layoutY="14.0" text="alpha name:" />
+      <TextField fx:id="alphaNameField" layoutX="469.0" layoutY="9.0" prefHeight="26.0" prefWidth="126.0" />
+      <Label layoutX="421.0" layoutY="45.0" text="phone :" />
+      <TextField fx:id="phoneNumberField" layoutX="469.0" layoutY="40.0" prefHeight="26.0" prefWidth="126.0" />
+      <Label layoutX="528.0" layoutY="108.0" text="Message to send:" />
+      <TextArea fx:id="enterTextArea" layoutX="465.0" layoutY="126.0" onKeyReleased="#textAreaChangedTextAction" prefHeight="100.0" prefWidth="349.0" />
+      <Button fx:id="sendTextButton" layoutX="532.0" layoutY="229.0" mnemonicParsing="false" onAction="#sendMessageButtonPressed" prefHeight="26.0" prefWidth="101.0" text="Send" />
+      <Button fx:id="clearTextButton" layoutX="640.0" layoutY="229.0" mnemonicParsing="false" onAction="#clearMessageAreaButtonPressed" prefHeight="26.0" prefWidth="101.0" text="Clear" />
+      <Separator layoutX="-4.0" layoutY="258.0" prefHeight="3.0" prefWidth="827.0" AnchorPane.leftAnchor="-4.0" AnchorPane.rightAnchor="-5.0" />
+      <Label layoutX="394.0" layoutY="261.0" text="Events log" />
+      <TextArea fx:id="logArea" editable="false" layoutX="10.0" layoutY="278.0" prefHeight="381.0" prefWidth="802.0">
          <font>
             <Font size="11.0" />
          </font>
       </TextArea>
-      <Button fx:id="clearLogButton" layoutX="711.0" layoutY="656.0" mnemonicParsing="false" onAction="#clearLogButtonPressed" prefHeight="26.0" prefWidth="101.0" text="Clear log" />
-      <Label layoutX="13.0" layoutY="115.0" text="parts:" />
-      <Label fx:id="countPartsLabel" layoutX="56.0" layoutY="115.0" prefHeight="17.0" prefWidth="48.0" text="0" />
-      <Button layoutX="638.0" layoutY="49.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="167.0" text="Options" />
+      <Button fx:id="clearLogButton" layoutX="711.0" layoutY="661.0" mnemonicParsing="false" onAction="#clearLogButtonPressed" prefHeight="26.0" prefWidth="101.0" text="Clear log" />
+      <Label layoutX="631.0" layoutY="108.0" text="parts:" />
+      <Label fx:id="countPartsLabel" layoutX="666.0" layoutY="109.0" prefHeight="17.0" prefWidth="48.0" text="0" />
+      <Label layoutX="10.0" layoutY="116.0" text="service_type:" />
+      <Label layoutX="63.0" layoutY="206.0" text="esm_class:" />
+      <Label layoutX="13.0" layoutY="147.0" text="registered_delivery:" />
+      <Label layoutX="247.0" layoutY="148.0" text="source_addr_npi:" />
+      <Label layoutX="247.0" layoutY="116.0" text="source_addr_ton:" />
+      <Label layoutX="12.0" layoutY="177.0" text="validity period(sec):" />
+      <Label layoutX="258.0" layoutY="178.0" text="dest_addr_ton:" />
+      <Label layoutX="259.0" layoutY="208.0" text="dest_addr_npi:" />
+      <ChoiceBox fx:id="serviceTypeChoiceBox" layoutX="81.0" layoutY="112.0" prefHeight="25.0" prefWidth="154.0" />
+      <TextField fx:id="esmClassField" layoutX="120.0" layoutY="203.0" prefHeight="26.0" prefWidth="115.0" text="0" />
+      <TextField fx:id="registeredDeliveryField" editable="false" layoutX="120.0" layoutY="143.0" prefHeight="26.0" prefWidth="115.0" text="1" />
+      <TextField fx:id="validityPeriodField" layoutX="120.0" layoutY="173.0" prefHeight="26.0" prefWidth="115.0" text="120" />
+      <TextField fx:id="sourceAddrTonField" layoutX="342.0" layoutY="112.0" prefHeight="10.0" prefWidth="115.0" text="5" />
+      <Separator layoutX="-2.0" layoutY="104.0" prefHeight="3.0" prefWidth="827.0" />
+      <TextField fx:id="sourceAddrNpiField" layoutX="342.0" layoutY="143.0" prefHeight="10.0" prefWidth="115.0" text="0" />
+      <TextField fx:id="destAddrTonField" layoutX="342.0" layoutY="173.0" prefHeight="10.0" prefWidth="115.0" text="1" />
+      <TextField fx:id="destAddrNpiField" layoutX="342.0" layoutY="204.0" prefHeight="10.0" prefWidth="115.0" text="1" />
+      <Separator layoutX="459.0" layoutY="107.0" orientation="VERTICAL" prefHeight="121.0" prefWidth="6.0" />
    </children>
 </AnchorPane>
