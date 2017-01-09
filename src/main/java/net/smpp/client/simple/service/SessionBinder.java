@@ -2,6 +2,7 @@ package net.smpp.client.simple.service;
 
 import lombok.Getter;
 import net.smpp.client.simple.controller.MainController;
+import net.smpp.client.simple.domain.ServiceType;
 import net.smpp.client.simple.utils.Constants;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -27,11 +28,25 @@ public class SessionBinder {
         this.messageReceiver = messageReceiver;
     }
 
-    public void bindSession(BindType bindType, String login, String pass, String ip, Integer port) throws Exception {
+    public void bindSession(BindType bindType,
+                            String login,
+                            String pass,
+                            String ip,
+                            Integer port
+    ) throws Exception {
+
         BasicConfigurator.configure();
         session = new SMPPSession();
 
-        session.connectAndBind(ip, port, new BindParameter(bindType, login, pass, "", TypeOfNumber.UNKNOWN, NumberingPlanIndicator.UNKNOWN, null));
+        session.connectAndBind(ip,
+                port,
+                new BindParameter(bindType,
+                        login,
+                        pass,
+                        "",
+                        TypeOfNumber.UNKNOWN,
+                        NumberingPlanIndicator.UNKNOWN,
+                        null));
         session.setEnquireLinkTimer(Constants.ENQUIRE_LINK_TIMER);
 
         // Set listener to receive deliver_sm

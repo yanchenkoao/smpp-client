@@ -1,5 +1,6 @@
 package net.smpp.client.simple.service;
 
+import net.smpp.client.simple.domain.ServiceType;
 import net.smpp.client.simple.utils.Constants;
 import net.smpp.client.simple.utils.TextUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -16,7 +17,17 @@ public class MessageSender {
 
     private Logger logger = Logger.getLogger(MessageSender.class);
 
-    public void sendMessage(String text, String alphaName, String phone, SMPPSession session) {
+    public void sendMessage(String text,
+                            String alphaName,
+                            String phone,
+                            SMPPSession session,
+                            ServiceType serviceType,
+                            Integer validityPeriod,
+                            Integer esmClass,
+                            Byte sourceAddrTon,
+                            Byte sourceAddrNpi,
+                            Byte destAddrTon,
+                            Byte destAddrNpi) {
         try {
             byte encoding = TextUtils.determineEncodingStatus(text);
             String[] partsMessage = TextUtils.getPartsOfMessage(text);
@@ -31,55 +42,38 @@ public class MessageSender {
                 byte[] message = TextUtils.convertStringToByte(partsMessage[i], encoding);
 
                 OptionalParameter sarSegmentSeqnum = OptionalParameters.newSarSegmentSeqnum(i + 1);
-                String messageId = submitMessage(
-                        session,
-                        message,
-                        sarMsgRefNum,
-                        sarSegmentSeqnum,
-                        sarTotalSegments,
-                        alphaName,
-                        phone,
-                        encoding);
-                logger.info("Message sent, message_id is " + Long.valueOf(messageId, 16));
+
+                String messageId = null;
+                try {
+                    messageId = session.submitShortMessage(serviceType.getStatus(),
+                            TypeOfNumber.valueOf(sourceAddrTon),
+                            NumberingPlanIndicator.valueOf(sourceAddrNpi),
+                            alphaName,
+                            TypeOfNumber.valueOf(destAddrTon),
+                            NumberingPlanIndicator.valueOf(destAddrNpi),
+                            phone,
+                            new ESMClass(esmClass),
+                            (byte) 0,
+                            (byte) 1,
+                            "",
+                            TextUtils.getSmsValidityPeriod(validityPeriod),
+                            new RegisteredDelivery(SMSCDeliveryReceipt.SUCCESS_FAILURE),
+                            (byte) 0,
+                            DataCodings.newInstance(encoding),
+                            (byte) 0,
+                            message,
+                            sarMsgRefNum,
+                            sarSegmentSeqnum,
+                            sarTotalSegments);
+
+                    logger.info("Message sent, message_id is " + Long.valueOf(messageId, 16));
+
+                } catch (Exception e) {
+                    logger.error(ExceptionUtils.getStackTrace(e));
+                }
             }
         } catch (Exception e) {
             logger.error(ExceptionUtils.getStackTrace(e));
         }
-    }
-
-    private String submitMessage(SMPPSession session,
-                                 byte[] message,
-                                 OptionalParameter sarMsgRefNum,
-                                 OptionalParameter sarSegmentSeqnum,
-                                 OptionalParameter sarTotalSegments,
-                                 String alphaName,
-                                 String phone,
-                                 byte encoding) {
-        String messageId = null;
-        try {
-            messageId = session.submitShortMessage("CMT",
-                    TypeOfNumber.INTERNATIONAL,
-                    NumberingPlanIndicator.UNKNOWN,
-                    alphaName,
-                    TypeOfNumber.INTERNATIONAL,
-                    NumberingPlanIndicator.UNKNOWN,
-                    phone,
-                    new ESMClass(),
-                    (byte) 0,
-                    (byte) 1,
-                    "",
-                    null,
-                    new RegisteredDelivery(SMSCDeliveryReceipt.SUCCESS_FAILURE),
-                    (byte) 0,
-                    DataCodings.newInstance(encoding),
-                    (byte) 0,
-                    message,
-                    sarMsgRefNum,
-                    sarSegmentSeqnum,
-                    sarTotalSegments);
-        } catch (Exception e) {
-            logger.error(ExceptionUtils.getStackTrace(e));
-        }
-        return messageId;
     }
 }

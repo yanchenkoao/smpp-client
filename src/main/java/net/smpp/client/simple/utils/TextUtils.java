@@ -12,6 +12,10 @@ public final class TextUtils {
     private static final String UCS2_ENCODING = "UTF-16BE";
     public static final long serialVersionUID = 1_000_025L;
 
+    private static final int MINUTES_IN_AN_HOUR = 60;
+    private static final int SECONDS_IN_A_MINUTE = 60;
+    private static final int HOURS_IN_A_DAY = 24;
+
     private TextUtils() {
     }
 
@@ -99,5 +103,59 @@ public final class TextUtils {
             }
         }
         return list.toArray(new String[list.size()]);
+    }
+
+    public static String getSmsValidityPeriod(int ttl) {
+        //        000000000500000R  Relative validity format "YYMMDDhhmmss000R", 5 minutes
+        //        YYMMDDHHMMSS000R
+        int seconds = ttl % SECONDS_IN_A_MINUTE;
+        int totalMinutes = ttl / SECONDS_IN_A_MINUTE;
+        int minutes = totalMinutes % MINUTES_IN_AN_HOUR;
+        int hoursTotal = totalMinutes / MINUTES_IN_AN_HOUR;
+        int hours = hoursTotal % HOURS_IN_A_DAY;
+        int daysTotal = hoursTotal / HOURS_IN_A_DAY;
+        int days = daysTotal % HOURS_IN_A_DAY;
+
+        //begin build string
+        String result = "0000";
+
+        if (days > 0) {
+            if (days < 10) {
+                result = result + "0" + days;
+            } else {
+                result = result + days;
+            }
+        } else {
+            result = result + "00";
+        }
+        if (hours > 0) {
+            if (hours < 10) {
+                result = result + "0" + hours;
+            } else {
+                result = result + hours;
+            }
+        } else {
+            result = result + "00";
+        }
+        if (minutes > 0) {
+            if (minutes < 10) {
+                result = result + "0" + minutes;
+            } else {
+                result = result + minutes;
+            }
+        } else {
+            result = result + "00";
+        }
+        if (seconds > 0) {
+            if (seconds < 10) {
+                result = result + "0" + seconds;
+            } else {
+                result = result + seconds;
+            }
+        } else {
+            result = result + "00";
+        }
+
+        return result + "000R";
     }
 }

@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,10 +20,11 @@ public class SmppClient extends Application {
     private static String[] savedArgs;
     private ConfigurableApplicationContext context;
 
-    @Value("Smpp client")
+    @Value("Smpp client (protocol v3.4)")
     private String windowTitle;
 
     @Autowired
+    @Qualifier("getRoot")
     private Parent parent;
 
     @Override
