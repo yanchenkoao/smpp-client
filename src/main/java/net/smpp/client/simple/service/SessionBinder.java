@@ -1,8 +1,6 @@
 package net.smpp.client.simple.service;
 
 import lombok.Getter;
-import net.smpp.client.simple.controller.MainController;
-import net.smpp.client.simple.domain.ServiceType;
 import net.smpp.client.simple.utils.Constants;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;

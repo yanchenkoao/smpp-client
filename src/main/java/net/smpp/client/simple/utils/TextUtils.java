@@ -1,7 +1,6 @@
 package net.smpp.client.simple.utils;
 
 import org.jsmpp.SMPPConstant;
-import org.jsmpp.bean.DataCoding;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
