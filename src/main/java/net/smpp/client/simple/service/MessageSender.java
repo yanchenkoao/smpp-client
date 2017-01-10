@@ -1,7 +1,6 @@
 package net.smpp.client.simple.service;
 
 import net.smpp.client.simple.domain.ServiceType;
-import net.smpp.client.simple.utils.Constants;
 import net.smpp.client.simple.utils.TextUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
@@ -9,7 +8,6 @@ import org.jsmpp.bean.*;
 import org.jsmpp.session.SMPPSession;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.Random;
 
 @Component

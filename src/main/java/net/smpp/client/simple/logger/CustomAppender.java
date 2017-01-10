@@ -1,7 +1,6 @@
 package net.smpp.client.simple.logger;
 
 import javafx.scene.control.TextArea;
-import org.apache.log4j.Level;
 import org.apache.log4j.WriterAppender;
 import org.apache.log4j.spi.LoggingEvent;
 

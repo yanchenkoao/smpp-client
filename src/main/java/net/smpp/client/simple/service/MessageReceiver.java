@@ -1,6 +1,5 @@
 package net.smpp.client.simple.service;
 
-import net.smpp.client.simple.utils.TextUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.jsmpp.bean.*;
