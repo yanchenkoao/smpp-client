@@ -27,21 +27,19 @@ public final class TextUtils {
     }
 
     public static byte[] convertStringToByte(String text, byte dataCoding) throws UnsupportedEncodingException {
-        if (dataCoding == SMPPConstant.ALPHA_DEFAULT) {
-            //latin ALPHA_DEFAULT
-            return text.getBytes();
-        } else {
-            //cyrylic ALPHA_UCS2
+        if (dataCoding == SMPPConstant.ALPHA_UCS2) { //Cyrillic
             return text.getBytes(UCS2_ENCODING);
+        } else {
+            return Gsm0338Charset.toGsm(text);
         }
     }
 
     public static String convertByteToString(byte[] array, byte dataCoding) throws UnsupportedEncodingException {
         //0-latin, 8-cyrillic
-        if (dataCoding == SMPPConstant.ALPHA_DEFAULT) {
-            return new String(array);
-        } else {
+        if (dataCoding == SMPPConstant.ALPHA_UCS2) { //Cyrillic
             return new String(array, UCS2_ENCODING);
+        } else {
+            return Gsm0338Charset.toUnicode(array);
         }
     }
 

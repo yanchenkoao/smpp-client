@@ -352,11 +352,8 @@ final class Gsm0338Charset {
     static byte[] toGsm(String text) {
 
         if (text == null) {
-
             return new byte[0];
-
         } else {
-
             int len = text.length();
             List<Byte> byteList = new ArrayList<>((int) (len * 1.2));
             for (int i = 0; i < len; i++) {
