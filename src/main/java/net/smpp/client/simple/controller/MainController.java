@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import net.smpp.client.simple.domain.ServiceType;
+import net.smpp.client.simple.domain.UdhType;
 import net.smpp.client.simple.logger.CustomAppender;
 import net.smpp.client.simple.service.MessageSender;
 import net.smpp.client.simple.service.SessionBinder;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 
 import static net.smpp.client.simple.domain.ServiceType.*;
+import static net.smpp.client.simple.domain.UdhType.*;
 import static org.jsmpp.bean.BindType.*;
 
 @Component
@@ -30,9 +32,6 @@ public class MainController {
 
     private final MessageSender messageSender;
     private final SessionBinder sessionBinder;
-
-    @Autowired
-    private ApplicationContext springContext;
 
     @FXML
     private ChoiceBox<BindType> sessionTypeChoiceBox;
@@ -67,8 +66,6 @@ public class MainController {
     @FXML
     private TextField validityPeriodField;
     @FXML
-    private TextField esmClassField;
-    @FXML
     private TextField sourceAddrTonField;
     @FXML
     private TextField sourceAddrNpiField;
@@ -76,6 +73,8 @@ public class MainController {
     private TextField destAddrTonField;
     @FXML
     private TextField destAddrNpiField;
+    @FXML
+    private ChoiceBox<UdhType> udhTypeChoiceBox;
 
     @Autowired
     public MainController(MessageSender messageSender, SessionBinder sessionBinder) {
@@ -101,6 +100,10 @@ public class MainController {
     public void initialize() {
         sessionTypeChoiceBox.setItems(FXCollections.observableArrayList(BIND_TRX, BIND_TX, BIND_RX));
         sessionTypeChoiceBox.getSelectionModel().selectFirst();
+
+        udhTypeChoiceBox.setItems(FXCollections.observableArrayList(udh_8bit, no_udh, udh_16bit, tlv));
+        udhTypeChoiceBox.getSelectionModel().selectFirst();
+
         sendTextButton.disableProperty().set(true);
 
         serviceTypeChoiceBox.setItems(FXCollections.observableArrayList(
@@ -123,7 +126,7 @@ public class MainController {
      */
     @PostConstruct
     public void init() {
-        System.out.println("init actions");
+        System.out.println("init");
     }
 
     /**
@@ -181,6 +184,7 @@ public class MainController {
             String alphaName = alphaNameField.getText();
             String phone = phoneNumberField.getText();
             String text = enterTextArea.getText();
+            UdhType udhType = udhTypeChoiceBox.getSelectionModel().getSelectedItem();
 
             if (alphaName.isEmpty()) {
                 logger.error("alpha name can`t be empty");
@@ -195,20 +199,19 @@ public class MainController {
 
             ServiceType serviceType = serviceTypeChoiceBox.getSelectionModel().getSelectedItem();
             Integer validityPeriod = Integer.valueOf(validityPeriodField.getText());
-            Integer esmClass = Integer.valueOf(esmClassField.getText());
             Byte sourceAddrTon = Byte.valueOf(sourceAddrTonField.getText());
             Byte sourceAddrNpi = Byte.valueOf(sourceAddrNpiField.getText());
             Byte destAddrTon = Byte.valueOf(destAddrTonField.getText());
             Byte destAddrNpi = Byte.valueOf(destAddrNpiField.getText());
 
             if (sessionBinder.getSession() != null) {
-                messageSender.sendMessage(text,
+                messageSender.sendMessage(udhType,
+                        text,
                         alphaName,
                         phone,
                         sessionBinder.getSession(),
                         serviceType,
                         validityPeriod,
-                        esmClass,
                         sourceAddrTon,
                         sourceAddrNpi,
                         destAddrTon,
