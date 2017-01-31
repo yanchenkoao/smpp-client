@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.text.Font?>
+
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="689.0" prefWidth="818.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.smpp.client.simple.controller.MainController">
    <children>
       <TextField fx:id="serverIpField" layoutX="83.0" layoutY="11.0" prefHeight="26.0" prefWidth="126.0" text="127.0.0.1" />
@@ -23,7 +29,7 @@
       <TextField fx:id="passwordField" layoutX="257.0" layoutY="42.0" prefHeight="26.0" prefWidth="126.0" />
       <Button fx:id="connectButton" layoutX="621.0" layoutY="9.0" mnemonicParsing="false" onAction="#connectButtonPressed" prefHeight="26.0" prefWidth="101.0" text="Connect" />
       <Button fx:id="disconnectButton" layoutX="621.0" layoutY="40.0" mnemonicParsing="false" onAction="#disconnectButtonPressed" prefHeight="26.0" prefWidth="101.0" text="Disconnect" />
-      <ChoiceBox fx:id="sessionTypeChoiceBox" layoutX="83.0" layoutY="71.0" prefHeight="26.0" prefWidth="126.0" />
+      <ChoiceBox fx:id="serviceTypeChoiceBox" layoutX="88.0" layoutY="111.0" prefHeight="26.0" prefWidth="147.0" />
       <Label layoutX="29.0" layoutY="76.0" prefHeight="17.0" prefWidth="48.0" text="session:">
          <font>
             <Font size="11.0" />
@@ -65,7 +71,7 @@
          <font>
             <Font size="11.0" />
          </font></Label>
-      <Label layoutX="53.0" layoutY="206.0" text="esm_class:">
+      <Label layoutX="29.0" layoutY="206.0" text="udh/tlv header:">
          <font>
             <Font size="11.0" />
          </font></Label>
@@ -93,8 +99,7 @@
          <font>
             <Font size="11.0" />
          </font></Label>
-      <ChoiceBox fx:id="serviceTypeChoiceBox" layoutX="92.0" layoutY="112.0" prefHeight="26.0" prefWidth="143.0" />
-      <TextField fx:id="esmClassField" layoutX="120.0" layoutY="203.0" prefHeight="26.0" prefWidth="115.0" text="0" />
+      <ChoiceBox fx:id="udhTypeChoiceBox" layoutX="119.0" layoutY="203.0" prefHeight="26.0" prefWidth="115.0" />
       <TextField fx:id="registeredDeliveryField" editable="false" layoutX="120.0" layoutY="143.0" prefHeight="26.0" prefWidth="115.0" text="1" />
       <TextField fx:id="validityPeriodField" layoutX="120.0" layoutY="173.0" prefHeight="26.0" prefWidth="115.0" text="120" />
       <TextField fx:id="sourceAddrTonField" layoutX="342.0" layoutY="112.0" prefHeight="10.0" prefWidth="115.0" text="5" />
@@ -108,5 +113,6 @@
             <Font size="11.0" />
          </font>
       </Label>
+      <ChoiceBox fx:id="sessionTypeChoiceBox" layoutX="82.0" layoutY="73.0" prefHeight="26.0" prefWidth="126.0" />
    </children>
 </AnchorPane>

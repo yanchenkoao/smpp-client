@@ -1,5 +1,6 @@
 package net.smpp.client.simple.utils;
 
+import net.smpp.client.simple.domain.UdhType;
 import org.jsmpp.SMPPConstant;
 
 import java.io.UnsupportedEncodingException;
@@ -8,12 +9,13 @@ import java.util.List;
 
 public final class TextUtils {
 
-    private static final String UCS2_ENCODING = "UTF-16BE";
-    public static final long serialVersionUID = 1_000_025L;
+    public static final long serialVersionUID = 1_000_031L;
 
     private static final int MINUTES_IN_AN_HOUR = 60;
     private static final int SECONDS_IN_A_MINUTE = 60;
     private static final int HOURS_IN_A_DAY = 24;
+
+    private static final String UCS2_ENCODING = "UTF-16BE";
 
     private TextUtils() {
     }
@@ -154,5 +156,62 @@ public final class TextUtils {
         }
 
         return result + "000R";
+    }
+
+    public static byte[] addUdh(String text, byte part, byte parts, int ref, byte encoding, UdhType udhType) throws UnsupportedEncodingException {
+
+        byte[] aMessage;
+
+        if (encoding == SMPPConstant.ALPHA_UCS2) { //Cyrilic
+            aMessage = text.getBytes(UCS2_ENCODING);
+        } else {
+            aMessage = Gsm0338Charset.toGsm(text);
+        }
+
+        if (parts == 1) {
+            return aMessage;
+        }
+
+        byte UDHIE_HEADER_LENGTH;
+        byte UDHIE_IDENTIFIER_SAR;
+        byte UDHIE_SAR_LENGTH;
+
+        if (udhType == UdhType.udh_16bit) {
+            UDHIE_HEADER_LENGTH = 0x06;
+            UDHIE_IDENTIFIER_SAR = 0x08;
+            UDHIE_SAR_LENGTH = 0x04;
+
+            int lengthOfData = aMessage.length;
+
+            byte[] segments = new byte[7 + lengthOfData];
+            segments[0] = UDHIE_HEADER_LENGTH;
+            segments[1] = UDHIE_IDENTIFIER_SAR;
+            segments[2] = UDHIE_SAR_LENGTH;
+            segments[3] = (byte) (ref & 0xFF);
+            segments[4] = (byte) ((ref & 0xFF00) >> 8);
+            segments[5] = parts;
+            segments[6] = part;
+            System.arraycopy(aMessage, 0, segments, 7, lengthOfData);
+            return segments;
+
+        } else {
+            //8bit
+            UDHIE_HEADER_LENGTH = 0x05;
+            UDHIE_IDENTIFIER_SAR = 0x00;
+            UDHIE_SAR_LENGTH = 0x03;
+
+            int lengthOfData = aMessage.length;
+
+            byte[] segments = new byte[6 + lengthOfData];
+            segments[0] = UDHIE_HEADER_LENGTH;
+            segments[1] = UDHIE_IDENTIFIER_SAR;
+            segments[2] = UDHIE_SAR_LENGTH;
+            segments[3] = (byte) ref;
+            segments[4] = parts;
+            segments[5] = part;
+            System.arraycopy(aMessage, 0, segments, 6, lengthOfData);
+            return segments;
+
+        }
     }
 }
