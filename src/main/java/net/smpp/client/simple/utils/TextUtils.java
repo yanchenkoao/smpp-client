@@ -2,6 +2,7 @@ package net.smpp.client.simple.utils;
 
 import net.smpp.client.simple.domain.UdhType;
 import org.jsmpp.SMPPConstant;
+import org.jsmpp.util.OctetUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -187,8 +188,8 @@ public final class TextUtils {
             segments[0] = UDHIE_HEADER_LENGTH;
             segments[1] = UDHIE_IDENTIFIER_SAR;
             segments[2] = UDHIE_SAR_LENGTH;
-            segments[3] = (byte) (ref & 0xFF);
-            segments[4] = (byte) ((ref & 0xFF00) >> 8);
+            segments[3] = (byte) ((ref & 0xFF00) >> 8);
+            segments[4] = (byte) (ref & 0xFF);
             segments[5] = parts;
             segments[6] = part;
             System.arraycopy(aMessage, 0, segments, 7, lengthOfData);
@@ -212,6 +213,13 @@ public final class TextUtils {
             System.arraycopy(aMessage, 0, segments, 6, lengthOfData);
             return segments;
 
+        }
+    }
+
+    public static void main(String[] args) {
+        byte[] arr = OctetUtil.intToBytes(5432);
+        for (byte b: arr) {
+            System.out.println(b);
         }
     }
 }
