@@ -25,7 +25,6 @@ class MessageReceiver implements MessageReceiverListener {
             try {
                 DeliveryReceipt delReceipt = deliverSm.getShortMessageAsDeliveryReceipt();
                 String hexMessageId = delReceipt.getId();
-                long longMessageId = Long.parseLong(hexMessageId, 16);
 
                 OptionalParameter[] optionalParameters = deliverSm.getOptionalParameters();
                 String parametersCollect = "";
@@ -45,7 +44,7 @@ class MessageReceiver implements MessageReceiverListener {
                     logger.info("no Optional parameters in hex tags");
                 }
 
-                logger.info("Delivery Receipt: hex messageId=" + hexMessageId + " long messageId=" + longMessageId + System.lineSeparator() +
+                logger.info("Delivery Receipt: string messageId=" + hexMessageId + System.lineSeparator() +
                         "text=" + delReceipt + System.lineSeparator() +
                         parametersCollect + System.lineSeparator());
             } catch (InvalidDeliveryReceiptException e) {
