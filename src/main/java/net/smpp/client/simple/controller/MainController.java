@@ -10,10 +10,12 @@ import net.smpp.client.simple.domain.UdhType;
 import net.smpp.client.simple.logger.CustomAppender;
 import net.smpp.client.simple.service.MessageSender;
 import net.smpp.client.simple.service.SessionBinder;
+import net.smpp.client.simple.service.Validator;
 import net.smpp.client.simple.utils.TextUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.jsmpp.bean.BindType;
+import org.jsmpp.bean.DataCoding;
 import org.jsmpp.session.SMPPSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -32,6 +34,7 @@ public class MainController {
 
     private final MessageSender messageSender;
     private final SessionBinder sessionBinder;
+    private final Validator validator;
 
     @FXML
     private ChoiceBox<BindType> sessionTypeChoiceBox;
@@ -77,9 +80,10 @@ public class MainController {
     private ChoiceBox<UdhType> udhTypeChoiceBox;
 
     @Autowired
-    public MainController(MessageSender messageSender, SessionBinder sessionBinder) {
+    public MainController(MessageSender messageSender, SessionBinder sessionBinder, Validator validator) {
         this.messageSender = messageSender;
         this.sessionBinder = sessionBinder;
+        this.validator = validator;
     }
 
     /**
@@ -101,7 +105,7 @@ public class MainController {
         sessionTypeChoiceBox.setItems(FXCollections.observableArrayList(BIND_TRX, BIND_TX, BIND_RX));
         sessionTypeChoiceBox.getSelectionModel().selectFirst();
 
-        udhTypeChoiceBox.setItems(FXCollections.observableArrayList(udh_8bit, no_udh, udh_16bit, tlv));
+        udhTypeChoiceBox.setItems(FXCollections.observableArrayList(tlv, udh_8bit, no_udh, udh_16bit));
         udhTypeChoiceBox.getSelectionModel().selectFirst();
 
         sendTextButton.disableProperty().set(true);
@@ -126,7 +130,7 @@ public class MainController {
      */
     @PostConstruct
     public void init() {
-        System.out.println("init");
+        System.out.println("controller inizialized");
     }
 
     /**
@@ -145,15 +149,22 @@ public class MainController {
             String ip = serverIpField.getText();
             Integer port = Integer.valueOf(serverPortField.getText());
 
+            if (!validator.validateLoginPass(login, pass)) {
+                logger.error("not correct login or password");
+                return;
+            }
+
             sessionBinder.bindSession(bindType, login, pass, ip, port);
             logger.info("Connected" + System.lineSeparator());
 
             connectButton.disableProperty().set(true);
             disconnectButton.disableProperty().set(false);
-            sendTextButton.disableProperty().set(false);
 
             setServerPropertiesDisabled(true);
 
+            if (bindType != BIND_RX) {
+                sendTextButton.disableProperty().set(false);
+            }
         } catch (Exception e) {
             connectButton.disableProperty().set(false);
             logger.error(ExceptionUtils.getStackTrace(e));
@@ -169,8 +180,8 @@ public class MainController {
                 session.unbindAndClose();
                 logger.info("Disconnected" + System.lineSeparator());
                 disconnectButton.disableProperty().set(true);
+                sendTextButton.disableProperty().set(true);
                 connectButton.disableProperty().set(false);
-
                 setServerPropertiesDisabled(false);
             }
         } catch (Exception e) {
