@@ -215,11 +215,4 @@ public final class TextUtils {
 
         }
     }
-
-    public static void main(String[] args) {
-        byte[] arr = OctetUtil.intToBytes(5432);
-        for (byte b: arr) {
-            System.out.println(b);
-        }
-    }
 }
