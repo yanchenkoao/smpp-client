@@ -67,7 +67,7 @@ public class MessageSender {
                                 (byte) 0,
                                 (byte) 1,
                                 "",
-                                TextUtils.getSmsValidityPeriod(validityPeriod),
+                                TextUtils.generateSmsValidityPeriod(validityPeriod),
                                 new RegisteredDelivery(SMSCDeliveryReceipt.SUCCESS_FAILURE),
                                 (byte) 0,
                                 DataCodings.newInstance(encoding),
@@ -85,7 +85,7 @@ public class MessageSender {
                                 (byte) 0,
                                 (byte) 1,
                                 "",
-                                TextUtils.getSmsValidityPeriod(validityPeriod),
+                                TextUtils.generateSmsValidityPeriod(validityPeriod),
                                 new RegisteredDelivery(SMSCDeliveryReceipt.SUCCESS_FAILURE),
                                 (byte) 0,
                                 DataCodings.newInstance(encoding),
@@ -106,7 +106,7 @@ public class MessageSender {
                                 (byte) 0,
                                 (byte) 1,
                                 "",
-                                TextUtils.getSmsValidityPeriod(validityPeriod),
+                                TextUtils.generateSmsValidityPeriod(validityPeriod),
                                 new RegisteredDelivery(SMSCDeliveryReceipt.SUCCESS_FAILURE),
                                 (byte) 0,
                                 DataCodings.newInstance(encoding),
@@ -114,8 +114,7 @@ public class MessageSender {
                                 message);
                     }
 
-
-                    logger.info("Message sent, message_id is " + Long.valueOf(messageId, 16));
+                    logger.info(String.format("Message sent, message_id hex=%s, long=%s", Long.valueOf(messageId, 16), messageId));
                 } catch (Exception e) {
                     logger.error(ExceptionUtils.getStackTrace(e));
                 }
