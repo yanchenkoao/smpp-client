@@ -114,7 +114,7 @@ public class MessageSender {
                                 message);
                     }
 
-                    logger.info(String.format("Message sent, message_id hex=%s, long=%s", Long.valueOf(messageId, 16), messageId));
+                    logger.info(String.format("Message sent, message_id long=%s, hex=%s", Long.valueOf(messageId, 16), messageId));
                 } catch (Exception e) {
                     logger.error(ExceptionUtils.getStackTrace(e));
                 }

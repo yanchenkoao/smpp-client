@@ -5,9 +5,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import net.smpp.client.simple.domain.DataMessage;
 import net.smpp.client.simple.domain.ServiceType;
 import net.smpp.client.simple.domain.UdhType;
 import net.smpp.client.simple.logger.CustomAppender;
+import net.smpp.client.simple.service.AsyncTask;
 import net.smpp.client.simple.service.MessageSender;
 import net.smpp.client.simple.service.SessionBinder;
 import net.smpp.client.simple.service.Validator;
@@ -15,10 +17,8 @@ import net.smpp.client.simple.utils.TextUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.jsmpp.bean.BindType;
-import org.jsmpp.bean.DataCoding;
 import org.jsmpp.session.SMPPSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -35,6 +35,7 @@ public class MainController {
     private final MessageSender messageSender;
     private final SessionBinder sessionBinder;
     private final Validator validator;
+    private Thread asyncTaskSender;
 
     @FXML
     private ChoiceBox<BindType> sessionTypeChoiceBox;
@@ -63,6 +64,10 @@ public class MainController {
     @FXML
     private Label countPartsLabel;
     @FXML
+    private Button loadStartSend;
+    @FXML
+    private Button loadStopSend;
+    @FXML
     private ChoiceBox<ServiceType> serviceTypeChoiceBox;
     @FXML
     private TextField registeredDeliveryField;
@@ -78,6 +83,8 @@ public class MainController {
     private TextField destAddrNpiField;
     @FXML
     private ChoiceBox<UdhType> udhTypeChoiceBox;
+    @FXML
+    private TextField countMessagesPerSecondField;
 
     @Autowired
     public MainController(MessageSender messageSender, SessionBinder sessionBinder, Validator validator) {
@@ -162,6 +169,7 @@ public class MainController {
 
             setServerPropertiesDisabled(true);
 
+
             if (bindType != BIND_RX) {
                 sendTextButton.disableProperty().set(false);
             }
@@ -187,6 +195,39 @@ public class MainController {
         } catch (Exception e) {
             logger.error(ExceptionUtils.getStackTrace(e));
         }
+    }
+
+    @FXML
+    public void onLoadStartSend(ActionEvent actionEvent) {
+
+        DataMessage dataMessage = new DataMessage(
+                alphaNameField.getText(),
+                phoneNumberField.getText(),
+                enterTextArea.getText(),
+                udhTypeChoiceBox.getSelectionModel().getSelectedItem(),
+                serviceTypeChoiceBox.getSelectionModel().getSelectedItem(),
+                Integer.valueOf(validityPeriodField.getText()),
+                Byte.valueOf(sourceAddrTonField.getText()),
+                Byte.valueOf(sourceAddrNpiField.getText()),
+                Byte.valueOf(destAddrTonField.getText()),
+                Byte.valueOf(destAddrNpiField.getText())
+        );
+
+        int countMessagesPerSecond = Integer.valueOf(countMessagesPerSecondField.getText());
+
+        if (countMessagesPerSecond < 1 || countMessagesPerSecond > 300) {
+            countMessagesPerSecond = 300;
+        }
+        if (asyncTaskSender == null) {
+            asyncTaskSender = new AsyncTask(messageSender, sessionBinder, dataMessage, countMessagesPerSecond);
+            asyncTaskSender.start();
+        }
+    }
+
+    @FXML
+    public void onLoadStopSend(ActionEvent actionEvent) {
+        asyncTaskSender.interrupt();
+        asyncTaskSender = null;
     }
 
     @FXML
