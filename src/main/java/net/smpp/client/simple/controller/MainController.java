@@ -267,7 +267,8 @@ public class MainController {
                         sourceAddrTon,
                         sourceAddrNpi,
                         destAddrTon,
-                        destAddrNpi);
+                        destAddrNpi,
+                        false);
             } else {
                 logger.error("smpp session not connected");
             }

@@ -30,7 +30,8 @@ public class MessageSender {
                             Byte sourceAddrTon,
                             Byte sourceAddrNpi,
                             Byte destAddrTon,
-                            Byte destAddrNpi) {
+                            Byte destAddrNpi,
+                            boolean isBatch) {
         try {
             byte encoding = TextUtils.determineEncodingStatus(text);
             String[] partsMessage = TextUtils.getPartsOfMessage(text);
@@ -113,8 +114,9 @@ public class MessageSender {
                                 (byte) 0,
                                 message);
                     }
-
-                    logger.info(String.format("Message sent, message_id long=%s, hex=%s", Long.valueOf(messageId, 16), messageId));
+                    if (!isBatch) {
+                        logger.info(String.format("Message sent, message_id long=%s, hex=%s", Long.valueOf(messageId, 16), messageId));
+                    }
                 } catch (Exception e) {
                     logger.error(ExceptionUtils.getStackTrace(e));
                 }
