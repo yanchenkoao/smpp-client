@@ -35,11 +35,13 @@ public class AsyncTask extends Thread {
                             dataMessage.getSourceAddrTon(),
                             dataMessage.getSourceAddrNpi(),
                             dataMessage.getDestAddrTon(),
-                            dataMessage.getDestAddrNpi());
+                            dataMessage.getDestAddrNpi(),
+                            true);
                 } else {
                     logger.error("smpp session not connected");
                 }
             }
+            logger.info(String.format("sended batch: %s messages", countMessages));
 
             try {
                 sleep(1000);
