@@ -12,4 +12,14 @@ public interface Constants {
 	int MAX_LOGIN_LENGTH = 15;
 	int MAX_PASSWORD_LENGTH = 8;
 
+	byte GSM_7_BIT = 0x00;
+	byte LATIN_8859_1 = 0x03;
+	byte ALPHA_UCS2 = 0x08;
+
+	int MINUTES_IN_AN_HOUR = 60;
+	int SECONDS_IN_A_MINUTE = 60;
+	int HOURS_IN_A_DAY = 24;
+
+	String UCS2_ENCODING = "UTF-16BE";
+
 }
