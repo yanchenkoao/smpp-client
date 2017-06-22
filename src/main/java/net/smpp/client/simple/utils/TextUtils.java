@@ -1,60 +1,88 @@
 package net.smpp.client.simple.utils;
 
 import net.smpp.client.simple.domain.UdhType;
+import net.smpp.client.simple.enums.LatinEncodingType;
+import net.smpp.client.simple.utils.encoding.CharsetEncoding;
+import net.smpp.client.simple.utils.encoding.Gsm0338Charset;
+import net.smpp.client.simple.utils.encoding.LatinIso8859Charset;
 import org.jsmpp.SMPPConstant;
-import org.jsmpp.util.OctetUtil;
 import org.jsmpp.util.RelativeTimeFormatter;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.smpp.client.simple.enums.LatinEncodingType.GSM_0338;
+import static net.smpp.client.simple.utils.Constants.*;
+
 public final class TextUtils {
 
-    public static final long serialVersionUID = 1_000_031L;
-
-    private static final int MINUTES_IN_AN_HOUR = 60;
-    private static final int SECONDS_IN_A_MINUTE = 60;
-    private static final int HOURS_IN_A_DAY = 24;
-
-    private static final String UCS2_ENCODING = "UTF-16BE";
+    public static final long serialVersionUID = 1_000_032L;
 
     private TextUtils() {
     }
 
-    public static byte determineEncodingStatus(String text) {
-        if (Gsm0338Charset.isGsmChars(text)) {
-            return SMPPConstant.ALPHA_DEFAULT; //0x00
+    public static byte determineEncodingStatus(String text, LatinEncodingType latinLatinEncodingType) {
+        CharsetEncoding charsetEncoding;
+
+        if (latinLatinEncodingType == GSM_0338) {
+            charsetEncoding = new Gsm0338Charset();
         } else {
-            return SMPPConstant.ALPHA_UCS2; //0x08
+            charsetEncoding = new LatinIso8859Charset();
+        }
+
+        if (charsetEncoding.isLatinEncoding(text)) {
+            return GSM_7_BIT;
+        } else {
+            return ALPHA_UCS2;
         }
     }
 
-    public static byte[] convertStringToByte(String text, byte dataCoding) throws UnsupportedEncodingException {
-        if (dataCoding == SMPPConstant.ALPHA_UCS2) { //Cyrillic
+    public static byte[] convertStringToByte(String text, byte dataCoding, LatinEncodingType latinEncodingTypeType) throws UnsupportedEncodingException {
+        if (dataCoding == GSM_7_BIT || dataCoding == LATIN_8859_1) {
+            CharsetEncoding charsetEncoding;
+            if (latinEncodingTypeType == GSM_0338) {
+                charsetEncoding = new Gsm0338Charset();
+            } else {
+                charsetEncoding = new LatinIso8859Charset();
+            }
+            return charsetEncoding.convertStringToBytes(text);
+        } else {
+            //cyrillic ALPHA_UCS2
             return text.getBytes(UCS2_ENCODING);
-        } else {
-            return Gsm0338Charset.toGsm(text);
         }
     }
 
-    public static String convertByteToString(byte[] array, byte dataCoding) throws UnsupportedEncodingException {
-        //0-latin, 8-cyrillic
-        if (dataCoding == SMPPConstant.ALPHA_UCS2) { //Cyrillic
+    public static String convertByteToString(byte[] array, byte dataCoding, LatinEncodingType latinEncodingTypeType) throws UnsupportedEncodingException {
+        if (dataCoding == ALPHA_UCS2) {
             return new String(array, UCS2_ENCODING);
         } else {
-            return Gsm0338Charset.toUnicode(array);
+            CharsetEncoding charsetEncoding;
+            if (latinEncodingTypeType == GSM_0338) {
+                charsetEncoding = new Gsm0338Charset();
+            } else {
+                charsetEncoding = new LatinIso8859Charset();
+            }
+
+            return charsetEncoding.convertBytesToString(array);
         }
     }
 
-    public static String[] getPartsOfMessage(String value) {
+    public static String[] getPartsOfMessage(String value, LatinEncodingType latinEncodingType) {
 
         int partsLength;
         int textLength;
         List<String> list = new ArrayList<>();
 
-        if (Gsm0338Charset.isGsmChars(value)) {
-            byte[] byteMessage = Gsm0338Charset.toGsm(value);
+        CharsetEncoding charsetEncoding;
+        if (latinEncodingType == LatinEncodingType.GSM_0338) {
+            charsetEncoding = new Gsm0338Charset();
+        } else {
+            charsetEncoding = new LatinIso8859Charset();
+        }
+
+        if (charsetEncoding.isLatinEncoding(value)) {
+            byte[] byteMessage = charsetEncoding.convertStringToBytes(value);
             textLength = byteMessage.length;
             if (textLength > Constants.GSM_LENGTH) {
                 partsLength = Constants.GSM_CONCAT_LENGTH;
@@ -78,7 +106,7 @@ public final class TextUtils {
                 int currentLength = currentMax - currentPosition;
                 byte[] currentPart = new byte[currentLength];
                 System.arraycopy(byteMessage, currentPosition, currentPart, 0, currentLength);
-                list.add(Gsm0338Charset.toUnicode(currentPart));
+                list.add(charsetEncoding.convertBytesToString(currentPart));
                 currentPosition += currentLength;
             }
         } else {
@@ -118,14 +146,26 @@ public final class TextUtils {
         return RelativeTimeFormatter.format(0, 0, days, hours, minutes, seconds);
     }
 
-    public static byte[] addUdh(String text, byte part, byte parts, int ref, byte encoding, UdhType udhType) throws UnsupportedEncodingException {
+    public static byte[] addUdh(String text,
+                                byte part,
+                                byte parts,
+                                int ref,
+                                byte encoding,
+                                UdhType udhType,
+                                LatinEncodingType latinEncodingType) throws UnsupportedEncodingException {
 
         byte[] aMessage;
 
         if (encoding == SMPPConstant.ALPHA_UCS2) { //Cyrilic
             aMessage = text.getBytes(UCS2_ENCODING);
         } else {
-            aMessage = Gsm0338Charset.toGsm(text);
+            CharsetEncoding charsetEncoding;
+            if (latinEncodingType == LatinEncodingType.GSM_0338) {
+                charsetEncoding = new Gsm0338Charset();
+            } else {
+                charsetEncoding = new LatinIso8859Charset();
+            }
+            aMessage = charsetEncoding.convertStringToBytes(text);
         }
 
         if (parts == 1) {

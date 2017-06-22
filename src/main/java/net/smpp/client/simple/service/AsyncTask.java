@@ -25,23 +25,15 @@ public class AsyncTask extends Thread {
         while (!Thread.currentThread().isInterrupted()) {
             for (int i = 0; i < countMessages; i++) {
                 if (sessionBinder.getSession() != null) {
-                    messageSender.sendMessage(dataMessage.getUdhType(),
-                            dataMessage.getText(),
-                            dataMessage.getAlphaName(),
-                            dataMessage.getPhone(),
+                    messageSender.sendMessage(
                             sessionBinder.getSession(),
-                            dataMessage.getServiceType(),
-                            dataMessage.getValidityPeriod(),
-                            dataMessage.getSourceAddrTon(),
-                            dataMessage.getSourceAddrNpi(),
-                            dataMessage.getDestAddrTon(),
-                            dataMessage.getDestAddrNpi(),
+                            dataMessage,
                             true);
                 } else {
                     logger.error("smpp session not connected");
                 }
             }
-            logger.info(String.format("sended batch: %s messages", countMessages));
+            logger.info(String.format("send batch: %s messages", countMessages));
 
             try {
                 sleep(1000);

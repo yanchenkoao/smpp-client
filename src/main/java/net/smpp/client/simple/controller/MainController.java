@@ -8,7 +8,7 @@ import javafx.scene.input.KeyEvent;
 import net.smpp.client.simple.domain.DataMessage;
 import net.smpp.client.simple.domain.ServiceType;
 import net.smpp.client.simple.domain.UdhType;
-import net.smpp.client.simple.logger.CustomAppender;
+import net.smpp.client.simple.enums.LatinEncodingType;
 import net.smpp.client.simple.service.AsyncTask;
 import net.smpp.client.simple.service.MessageSender;
 import net.smpp.client.simple.service.SessionBinder;
@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 
 import static net.smpp.client.simple.domain.ServiceType.*;
 import static net.smpp.client.simple.domain.UdhType.*;
+import static net.smpp.client.simple.enums.LatinEncodingType.*;
 import static org.jsmpp.bean.BindType.*;
 
 @Component
@@ -54,8 +55,6 @@ public class MainController {
     @FXML
     private TextArea enterTextArea;
     @FXML
-    private TextArea logArea;
-    @FXML
     private Button connectButton;
     @FXML
     private Button disconnectButton;
@@ -63,10 +62,6 @@ public class MainController {
     private Button sendTextButton;
     @FXML
     private Label countPartsLabel;
-    @FXML
-    private Button loadStartSend;
-    @FXML
-    private Button loadStopSend;
     @FXML
     private ChoiceBox<ServiceType> serviceTypeChoiceBox;
     @FXML
@@ -83,6 +78,8 @@ public class MainController {
     private TextField destAddrNpiField;
     @FXML
     private ChoiceBox<UdhType> udhTypeChoiceBox;
+    @FXML
+    private ChoiceBox<LatinEncodingType> latinEncodingChoiceBox;
     @FXML
     private TextField countMessagesPerSecondField;
 
@@ -115,6 +112,9 @@ public class MainController {
         udhTypeChoiceBox.setItems(FXCollections.observableArrayList(tlv, udh_8bit, no_udh, udh_16bit));
         udhTypeChoiceBox.getSelectionModel().selectFirst();
 
+        latinEncodingChoiceBox.setItems(FXCollections.observableArrayList(GSM_0338, LATIN_ISO8859_1));
+        latinEncodingChoiceBox.getSelectionModel().selectFirst();
+
         sendTextButton.disableProperty().set(true);
 
         serviceTypeChoiceBox.setItems(FXCollections.observableArrayList(
@@ -127,9 +127,6 @@ public class MainController {
                 unstructured_supplementary_services_data_USSD
         ));
         serviceTypeChoiceBox.getSelectionModel().selectFirst();
-
-        //set logger appender to text area for logging (on init stage)
-        CustomAppender.setLogTextArea(logArea);
     }
 
     /**
@@ -210,7 +207,9 @@ public class MainController {
                 Byte.valueOf(sourceAddrTonField.getText()),
                 Byte.valueOf(sourceAddrNpiField.getText()),
                 Byte.valueOf(destAddrTonField.getText()),
-                Byte.valueOf(destAddrNpiField.getText())
+                Byte.valueOf(destAddrNpiField.getText()),
+                latinEncodingChoiceBox.getSelectionModel().getSelectedItem(),
+                1
         );
 
         int countMessagesPerSecond = Integer.valueOf(countMessagesPerSecondField.getText());
@@ -237,6 +236,7 @@ public class MainController {
             String phone = phoneNumberField.getText();
             String text = enterTextArea.getText();
             UdhType udhType = udhTypeChoiceBox.getSelectionModel().getSelectedItem();
+            LatinEncodingType latinEncodingType = latinEncodingChoiceBox.getSelectionModel().getSelectedItem();
 
             if (alphaName.isEmpty()) {
                 logger.error("alpha name can`t be empty");
@@ -251,23 +251,31 @@ public class MainController {
 
             ServiceType serviceType = serviceTypeChoiceBox.getSelectionModel().getSelectedItem();
             Integer validityPeriod = Integer.valueOf(validityPeriodField.getText());
+            Integer registeredDelivery = Integer.valueOf(registeredDeliveryField.getText());
             Byte sourceAddrTon = Byte.valueOf(sourceAddrTonField.getText());
             Byte sourceAddrNpi = Byte.valueOf(sourceAddrNpiField.getText());
             Byte destAddrTon = Byte.valueOf(destAddrTonField.getText());
             Byte destAddrNpi = Byte.valueOf(destAddrNpiField.getText());
 
+            DataMessage dataMessage = new DataMessage(
+                    alphaName,
+                    phone,
+                    text,
+                    udhType,
+                    serviceType,
+                    validityPeriod,
+                    sourceAddrTon,
+                    sourceAddrNpi,
+                    destAddrTon,
+                    destAddrNpi,
+                    latinEncodingType,
+                    registeredDelivery
+            );
+
             if (sessionBinder.getSession() != null) {
-                messageSender.sendMessage(udhType,
-                        text,
-                        alphaName,
-                        phone,
+                messageSender.sendMessage(
                         sessionBinder.getSession(),
-                        serviceType,
-                        validityPeriod,
-                        sourceAddrTon,
-                        sourceAddrNpi,
-                        destAddrTon,
-                        destAddrNpi,
+                        dataMessage,
                         false);
             } else {
                 logger.error("smpp session not connected");
@@ -283,13 +291,8 @@ public class MainController {
     }
 
     @FXML
-    public void clearLogButtonPressed(ActionEvent actionEvent) {
-        logArea.clear();
-    }
-
-    @FXML
     public void textAreaChangedTextAction(KeyEvent keyEvent) {
-        countPartsLabel.setText(String.valueOf(TextUtils.getPartsOfMessage(enterTextArea.getText()).length));
+        countPartsLabel.setText(String.valueOf(TextUtils.getPartsOfMessage(enterTextArea.getText(), LatinEncodingType.GSM_0338).length));
     }
 
     private void setServerPropertiesDisabled(boolean isDisabled) {
