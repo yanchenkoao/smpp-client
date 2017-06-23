@@ -127,7 +127,7 @@
          </font>
       </Label>
       <Separator layoutX="8.0" layoutY="424.0" prefHeight="3.0" prefWidth="698.0" />
-      <Label layoutX="17.0" layoutY="439.0" text="log file writes to ./smpp-client.log" />
+      <Label layoutX="17.0" layoutY="439.0" text="log file writes to /tmp/smpp-client.log" />
       <ChoiceBox fx:id="latinEncodingChoiceBox" layoutX="103.0" layoutY="167.0" prefHeight="26.0" prefWidth="126.0" />
       <Label layoutX="9.0" layoutY="172.0" text="latin encoding:">
          <font>

@@ -14,7 +14,6 @@ import net.smpp.client.simple.service.MessageSender;
 import net.smpp.client.simple.service.SessionBinder;
 import net.smpp.client.simple.service.Validator;
 import net.smpp.client.simple.utils.TextUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.jsmpp.bean.BindType;
 import org.jsmpp.session.SMPPSession;
@@ -33,7 +32,7 @@ import static org.jsmpp.bean.BindType.*;
 @Component
 public class MainController {
 
-    private Logger logger = Logger.getLogger(MainController.class);
+    private Logger logger = Logger.getLogger(getClass());
 
     private final MessageSender messageSender;
     private final SessionBinder sessionBinder;
@@ -173,7 +172,7 @@ public class MainController {
             }
         } catch (Exception e) {
             connectButton.disableProperty().set(false);
-            logger.error(ExceptionUtils.getStackTrace(e));
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -191,7 +190,7 @@ public class MainController {
                 setServerPropertiesDisabled(false);
             }
         } catch (Exception e) {
-            logger.error(ExceptionUtils.getStackTrace(e));
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -281,7 +280,7 @@ public class MainController {
                 logger.error("smpp session not connected");
             }
         } catch (Exception ex) {
-            logger.error(ExceptionUtils.getStackTrace(ex));
+            logger.error(ex.getMessage(), ex);
         }
     }
 
