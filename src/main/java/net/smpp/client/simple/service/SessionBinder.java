@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SessionBinder {
 
-    private Logger logger = Logger.getLogger(SessionBinder.class);
+    private Logger logger = Logger.getLogger(getClass());
 
     private final MessageReceiver messageReceiver;
     private SMPPSession session;

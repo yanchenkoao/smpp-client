@@ -11,22 +11,22 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="470.0" prefWidth="708.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.smpp.client.simple.controller.MainController">
    <children>
-      <TextField fx:id="countMessagesPerSecondField" layoutX="178.0" layoutY="387.0" prefHeight="26.0" prefWidth="48.0" text="2" />
-      <Label layoutX="16.0" layoutY="393.0" text="count messages per second:">
+      <TextField fx:id="countMessagesPerSecondField" layoutX="240.0" layoutY="387.0" prefHeight="26.0" prefWidth="48.0" text="2" />
+      <Label layoutX="16.0" layoutY="393.0" text="count messages per second(max. 200):">
          <font>
             <Font size="11.0" />
          </font></Label>
-      <TextField fx:id="serverPortField" layoutX="51.0" layoutY="42.0" prefHeight="26.0" prefWidth="126.0" text="20510" />
+      <TextField fx:id="serverPortField" layoutX="51.0" layoutY="42.0" prefHeight="26.0" prefWidth="126.0" text="8056" />
       <Label layoutX="186.0" layoutY="17.0" text="login:">
          <font>
             <Font size="11.0" />
          </font></Label>
-      <TextField fx:id="loginField" layoutX="222.0" layoutY="12.0" prefHeight="26.0" prefWidth="126.0" text="h_smpp_1" />
+      <TextField fx:id="loginField" layoutX="222.0" layoutY="12.0" prefHeight="26.0" prefWidth="126.0" text="test" />
       <Label layoutX="188.0" layoutY="47.0" text="pass:">
          <font>
             <Font size="11.0" />
          </font></Label>
-      <TextField fx:id="passwordField" layoutX="222.0" layoutY="42.0" prefHeight="26.0" prefWidth="126.0" />
+      <TextField fx:id="passwordField" layoutX="222.0" layoutY="42.0" prefHeight="26.0" prefWidth="126.0" text="test" />
       <Button fx:id="connectButton" layoutX="546.0" layoutY="11.0" mnemonicParsing="false" onAction="#connectButtonPressed" prefHeight="26.0" prefWidth="101.0" text="Connect" />
       <Button fx:id="disconnectButton" layoutX="546.0" layoutY="42.0" mnemonicParsing="false" onAction="#disconnectButtonPressed" prefHeight="26.0" prefWidth="101.0" text="Disconnect" />
       <ChoiceBox fx:id="serviceTypeChoiceBox" layoutX="89.0" layoutY="93.0" prefHeight="26.0" prefWidth="140.0" />
@@ -46,7 +46,7 @@
          <font>
             <Font size="11.0" />
          </font></Label>
-      <TextField fx:id="phoneNumberField" layoutX="580.0" layoutY="185.0" prefHeight="26.0" prefWidth="115.0">
+      <TextField fx:id="phoneNumberField" layoutX="580.0" layoutY="185.0" prefHeight="26.0" prefWidth="115.0" text="380000000000">
          <font>
             <Font size="12.0" />
          </font></TextField>
@@ -118,9 +118,9 @@
          </font>
       </Label>
       <ChoiceBox fx:id="sessionTypeChoiceBox" layoutX="410.0" layoutY="12.0" prefHeight="26.0" prefWidth="126.0" />
-      <Button fx:id="loadStartSend" layoutX="243.0" layoutY="387.0" mnemonicParsing="false" onAction="#onLoadStartSend" text="start send" />
-      <Button fx:id="loadStopSend" layoutX="333.0" layoutY="387.0" mnemonicParsing="false" onAction="#onLoadStopSend" text="stop send" />
-      <TextField fx:id="serverIpField" layoutX="51.0" layoutY="12.0" prefHeight="26.0" prefWidth="126.0" text="10.11.1.56" />
+      <Button fx:id="loadStartSend" layoutX="305.0" layoutY="387.0" mnemonicParsing="false" onAction="#onLoadStartSend" text="start send" />
+      <Button fx:id="loadStopSend" layoutX="395.0" layoutY="387.0" mnemonicParsing="false" onAction="#onLoadStopSend" text="stop send" />
+      <TextField fx:id="serverIpField" layoutX="51.0" layoutY="12.0" prefHeight="26.0" prefWidth="126.0" text="127.0.0.1" />
       <Label layoutX="14.0" layoutY="47.0" text="port:">
          <font>
             <Font size="11.0" />
