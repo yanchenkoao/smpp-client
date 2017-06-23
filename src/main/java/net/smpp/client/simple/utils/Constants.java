@@ -22,4 +22,6 @@ public interface Constants {
 
 	String UCS2_ENCODING = "UTF-16BE";
 
+	int MAX_MESSAGES_PER_BATCH = 200;
+
 }

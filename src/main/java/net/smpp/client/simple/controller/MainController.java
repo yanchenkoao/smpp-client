@@ -25,7 +25,9 @@ import javax.annotation.PostConstruct;
 
 import static net.smpp.client.simple.domain.ServiceType.*;
 import static net.smpp.client.simple.domain.UdhType.*;
-import static net.smpp.client.simple.enums.LatinEncodingType.*;
+import static net.smpp.client.simple.enums.LatinEncodingType.GSM_0338;
+import static net.smpp.client.simple.enums.LatinEncodingType.LATIN_ISO8859_1;
+import static net.smpp.client.simple.utils.Constants.MAX_MESSAGES_PER_BATCH;
 import static org.jsmpp.bean.BindType.*;
 
 @Component
@@ -134,7 +136,6 @@ public class MainController {
      */
     @PostConstruct
     public void init() {
-        System.out.println("controller inizialized");
     }
 
     /**
@@ -214,8 +215,8 @@ public class MainController {
 
         int countMessagesPerSecond = Integer.valueOf(countMessagesPerSecondField.getText());
 
-        if (countMessagesPerSecond < 1 || countMessagesPerSecond > 300) {
-            countMessagesPerSecond = 300;
+        if (countMessagesPerSecond < 1 || countMessagesPerSecond > MAX_MESSAGES_PER_BATCH) {
+            countMessagesPerSecond = MAX_MESSAGES_PER_BATCH;
         }
         if (asyncTaskSender == null) {
             asyncTaskSender = new AsyncTask(messageSender, sessionBinder, dataMessage, countMessagesPerSecond);
@@ -275,8 +276,7 @@ public class MainController {
             if (sessionBinder.getSession() != null) {
                 messageSender.sendMessage(
                         sessionBinder.getSession(),
-                        dataMessage,
-                        false);
+                        dataMessage);
             } else {
                 logger.error("smpp session not connected");
             }

@@ -20,11 +20,10 @@ import static org.jsmpp.bean.SMSCDeliveryReceipt.*;
 @Component
 public class MessageSender {
 
-    private Logger logger = Logger.getLogger(MessageSender.class);
+    private Logger logger = Logger.getLogger(getClass());
 
     public void sendMessage(SMPPSession session,
-                            DataMessage dataMessage,
-                            boolean isBatch) {
+                            DataMessage dataMessage) {
         try {
             byte encoding = TextUtils.determineEncodingStatus(dataMessage.getText(), dataMessage.getLatinEncodingType());
             String[] partsMessage = TextUtils.getPartsOfMessage(dataMessage.getText(), dataMessage.getLatinEncodingType());
@@ -34,7 +33,6 @@ public class MessageSender {
             byte totalSegments = (byte) partsMessage.length;
             OptionalParameter sarMsgRefNum = OptionalParameters.newSarMsgRefNum(refNum);
             OptionalParameter sarTotalSegments = OptionalParameters.newSarTotalSegments(totalSegments);
-
 
             for (int i = 0; i < totalSegments; i++) {
                 byte[] message;
@@ -60,80 +58,87 @@ public class MessageSender {
 
                 try {
                     String messageId;
-                    if (udhType == udh_8bit || udhType == udh_16bit) {
-                        messageId = session.submitShortMessage(serviceType.getStatus(),
-                                TypeOfNumber.valueOf(sourceAddrTon),
-                                NumberingPlanIndicator.valueOf(sourceAddrNpi),
-                                alphaName,
-                                TypeOfNumber.valueOf(destAddrTon),
-                                NumberingPlanIndicator.valueOf(destAddrNpi),
-                                phone,
-                                getEsmClass(udhType),
-                                (byte) 0,
-                                (byte) 1,
-                                "",
-                                TextUtils.generateSmsValidityPeriod(validityPeriod),
-                                new RegisteredDelivery(smscDeliveryReceipt),
-                                (byte) 0,
-                                DataCodings.newInstance(encoding),
-                                (byte) 0,
-                                message);
-                    } else if (udhType == tlv) {
-                        messageId = session.submitShortMessage(serviceType.getStatus(),
-                                TypeOfNumber.valueOf(sourceAddrTon),
-                                NumberingPlanIndicator.valueOf(sourceAddrNpi),
-                                alphaName,
-                                TypeOfNumber.valueOf(destAddrTon),
-                                NumberingPlanIndicator.valueOf(destAddrNpi),
-                                phone,
-                                getEsmClass(udhType),
-                                (byte) 0,
-                                (byte) 1,
-                                "",
-                                TextUtils.generateSmsValidityPeriod(validityPeriod),
-                                new RegisteredDelivery(smscDeliveryReceipt),
-                                (byte) 0,
-                                DataCodings.newInstance(encoding),
-                                (byte) 0,
-                                message,
-                                sarMsgRefNum,
-                                sarSegmentSeqnum,
-                                sarTotalSegments);
-                    } else {
-                        messageId = session.submitShortMessage(serviceType.getStatus(),
-                                TypeOfNumber.valueOf(sourceAddrTon),
-                                NumberingPlanIndicator.valueOf(sourceAddrNpi),
-                                alphaName,
-                                TypeOfNumber.valueOf(destAddrTon),
-                                NumberingPlanIndicator.valueOf(destAddrNpi),
-                                phone,
-                                getEsmClass(udhType),
-                                (byte) 0,
-                                (byte) 1,
-                                "",
-                                TextUtils.generateSmsValidityPeriod(validityPeriod),
-                                new RegisteredDelivery(smscDeliveryReceipt),
-                                (byte) 0,
-                                DataCodings.newInstance(encoding),
-                                (byte) 0,
-                                message);
+
+                    switch (udhType) {
+                        case udh_8bit:
+                        case udh_16bit:
+                            messageId = session.submitShortMessage(serviceType.getStatus(),
+                                    TypeOfNumber.valueOf(sourceAddrTon),
+                                    NumberingPlanIndicator.valueOf(sourceAddrNpi),
+                                    alphaName,
+                                    TypeOfNumber.valueOf(destAddrTon),
+                                    NumberingPlanIndicator.valueOf(destAddrNpi),
+                                    phone,
+                                    getEsmClass(udhType),
+                                    (byte) 0,
+                                    (byte) 1,
+                                    "",
+                                    TextUtils.generateSmsValidityPeriod(validityPeriod),
+                                    new RegisteredDelivery(smscDeliveryReceipt),
+                                    (byte) 0,
+                                    DataCodings.newInstance(encoding),
+                                    (byte) 0,
+                                    message);
+
+                            break;
+
+                        case tlv:
+                            messageId = session.submitShortMessage(serviceType.getStatus(),
+                                    TypeOfNumber.valueOf(sourceAddrTon),
+                                    NumberingPlanIndicator.valueOf(sourceAddrNpi),
+                                    alphaName,
+                                    TypeOfNumber.valueOf(destAddrTon),
+                                    NumberingPlanIndicator.valueOf(destAddrNpi),
+                                    phone,
+                                    getEsmClass(udhType),
+                                    (byte) 0,
+                                    (byte) 1,
+                                    "",
+                                    TextUtils.generateSmsValidityPeriod(validityPeriod),
+                                    new RegisteredDelivery(smscDeliveryReceipt),
+                                    (byte) 0,
+                                    DataCodings.newInstance(encoding),
+                                    (byte) 0,
+                                    message,
+                                    sarMsgRefNum,
+                                    sarSegmentSeqnum,
+                                    sarTotalSegments);
+
+                            break;
+
+                        default:
+                            messageId = session.submitShortMessage(serviceType.getStatus(),
+                                    TypeOfNumber.valueOf(sourceAddrTon),
+                                    NumberingPlanIndicator.valueOf(sourceAddrNpi),
+                                    alphaName,
+                                    TypeOfNumber.valueOf(destAddrTon),
+                                    NumberingPlanIndicator.valueOf(destAddrNpi),
+                                    phone,
+                                    getEsmClass(udhType),
+                                    (byte) 0,
+                                    (byte) 1,
+                                    "",
+                                    TextUtils.generateSmsValidityPeriod(validityPeriod),
+                                    new RegisteredDelivery(smscDeliveryReceipt),
+                                    (byte) 0,
+                                    DataCodings.newInstance(encoding),
+                                    (byte) 0,
+                                    message);
+
                     }
-                    if (!isBatch) {
-                        logger.info(String.format("Message sent, message_id hex=%s, long=%s", Long.valueOf(messageId, 16), messageId));
-                    }
+
+                    logger.info(String.format("sent, message_id hex=%s, long=%s", Long.valueOf(messageId, 16), messageId));
                 } catch (Exception e) {
-                    logger.error(ExceptionUtils.getStackTrace(e));
+                    logger.error(e.getMessage(), e);
                 }
             }
         } catch (Exception e) {
-            logger.error(ExceptionUtils.getStackTrace(e));
+            logger.error(e.getMessage(), e);
         }
     }
 
     private ESMClass getEsmClass(UdhType udhType) {
-        if (udhType == no_udh || udhType == tlv) {
-            return new ESMClass(ESMCLS_DEFAULT_MODE);
-        } else if (udhType == udh_8bit || udhType == udh_16bit) {
+        if (udhType == udh_8bit || udhType == udh_16bit) {
             return new ESMClass(ESMCLS_UDHI_INDICATOR_SET);
         }
         return new ESMClass(ESMCLS_DEFAULT_MODE);

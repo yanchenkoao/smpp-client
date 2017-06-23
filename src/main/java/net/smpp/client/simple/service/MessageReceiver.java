@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Component
 class MessageReceiver implements MessageReceiverListener {
 
-    private Logger logger = Logger.getLogger(MessageReceiver.class);
+    private Logger logger = Logger.getLogger(getClass());
 
     @Override
     public void onAcceptDeliverSm(DeliverSm deliverSm) throws ProcessRequestException {
@@ -30,42 +30,38 @@ class MessageReceiver implements MessageReceiverListener {
                 OptionalParameter[] optionalParameters = deliverSm.getOptionalParameters();
                 String parametersCollect = "";
 
-                try {
-                    parametersCollect = Arrays.stream(optionalParameters)
-                            .map(v -> {
-                                try {
-                                    return "[hex tag=" + Integer.toHexString(v.tag) + "] [value=" + new String(v.serialize(), "UTF-8").trim() + "]" + System.lineSeparator();
-                                } catch (UnsupportedEncodingException e) {
-                                    System.out.println(e);
-                                    return "";
-                                }
-                            })
-                            .collect(Collectors.joining());
-                } catch (NullPointerException e) {
-                    logger.info("no Optional parameters in hex tags");
-                }
+                parametersCollect = Arrays.stream(optionalParameters)
+                        .map(v -> {
+                            try {
+                                return "[hex tag=" + Integer.toHexString(v.tag) + "] [value=" + new String(v.serialize(), "UTF-8").trim() + "]" + System.lineSeparator();
+                            } catch (UnsupportedEncodingException e) {
+                                logger.error(e.getMessage(), e);
+                                return "";
+                            }
+                        })
+                        .collect(Collectors.joining());
 
-                logger.info("Delivery Receipt: messageId=" + hexMessageId + System.lineSeparator() +
+                logger.info("delivery receipt: messageId=" + hexMessageId + System.lineSeparator() +
                         "source: " + source + System.lineSeparator() +
                         "text=" + delReceipt + System.lineSeparator() +
                         parametersCollect + System.lineSeparator());
             } catch (InvalidDeliveryReceiptException e) {
-                logger.error(ExceptionUtils.getStackTrace(e));
+                logger.error(e.getMessage(), e);
             }
         } else {
             // regular short message
-            logger.info("Receiving message : " + new String(deliverSm.getShortMessage()));
+            logger.info("receiving message: " + new String(deliverSm.getShortMessage()));
         }
     }
 
     @Override
     public void onAcceptAlertNotification(AlertNotification alertNotification) {
-        logger.info("Received AlertNotification (onAcceptAlertNotification method)");
+        logger.info("Received AlertNotification");
     }
 
     @Override
     public DataSmResult onAcceptDataSm(DataSm dataSm, Session source) throws ProcessRequestException {
-        logger.info("Received DataSm (onAcceptDataSm method)");
+        logger.info("Received DataSm");
         return null;
     }
 }

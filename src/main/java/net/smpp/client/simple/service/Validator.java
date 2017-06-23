@@ -10,7 +10,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 @Component
 public class Validator {
 
-    private Logger logger = Logger.getLogger(MainController.class);
+    private Logger logger = Logger.getLogger(getClass());
 
     public boolean validateLoginPass(String login, String pass) {
         return validateLogin(login) && validatePass(pass);

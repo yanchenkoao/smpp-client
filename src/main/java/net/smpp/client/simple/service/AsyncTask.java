@@ -27,8 +27,7 @@ public class AsyncTask extends Thread {
                 if (sessionBinder.getSession() != null) {
                     messageSender.sendMessage(
                             sessionBinder.getSession(),
-                            dataMessage,
-                            true);
+                            dataMessage);
                 } else {
                     logger.error("smpp session not connected");
                 }
